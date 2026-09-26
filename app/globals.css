@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0b0d0f;
+  --panel: #12171a;
+  --panel-alt: #171d21;
+  --foreground: #f5f1ea;
+  --muted: #bab3aa;
+  --border: rgba(255, 255, 255, 0.08);
+  --amber: #f3b84d;
+  --amber-soft: #f7d69a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(243, 184, 77, 0.08), transparent 20%),
+    radial-gradient(circle at bottom right, rgba(243, 184, 77, 0.05), transparent 28%),
+    #0b0d0f;
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(circle at center, black 38%, transparent 100%);
+}
+
+::selection {
+  background: rgba(243, 184, 77, 0.3);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer utilities {
+  .panel {
+    @apply rounded-[1.5rem] border border-white/10 bg-[#111519]/95 shadow-[0_24px_80px_rgba(0,0,0,0.35)];
+  }
+
+  .mono {
+    font-family: var(--font-geist-mono), "SFMono-Regular", monospace;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-[#f3b84d]/30 bg-[#f3b84d]/8 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-[#f3b84d];
+  }
+}
