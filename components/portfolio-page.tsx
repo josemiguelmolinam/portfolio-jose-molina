@@ -553,7 +553,6 @@ export function PortfolioPage() {
   };
   const heroPanel = locale === "es"
     ? {
-        portfolio: "portfolio.v1",
         focus: "Enfoque",
         ready: "Listo para construir",
         stack: "Stack",
@@ -571,7 +570,6 @@ export function PortfolioPage() {
         available: "Disponible",
       }
     : {
-        portfolio: "portfolio.v1",
         focus: "Focus",
         ready: "Ready to build",
         stack: "Stack",
@@ -680,11 +678,11 @@ export function PortfolioPage() {
             animate={shouldReduceMotion ? undefined : "visible"}
             variants={fadeInUp}
             transition={{ duration: 0.45, ease: "easeOut" }}
-            className="grid gap-8 pb-12 pt-16 sm:pt-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center"
+            className="pb-12 pt-16 sm:pt-20"
           >
-            <div>
+            <div className="w-full text-left">
 
-              <h1 className="mt-6 max-w-xl text-3xl font-semibold leading-[1.04] tracking-[-0.06em] text-[#f3efe7] sm:text-5xl lg:text-6xl">
+              <h1 className="mt-6 max-w-[12ch] text-4xl font-semibold leading-[0.96] tracking-[-0.06em] text-[#f3efe7] sm:max-w-[14ch] sm:text-5xl lg:max-w-[15ch] lg:text-[4.5rem] lg:leading-[0.9]">
                 {t.hero.title}
               </h1>
               <p className="mt-6 max-w-xl text-sm leading-6 text-[#d0cac2] sm:text-lg">
@@ -740,104 +738,6 @@ export function PortfolioPage() {
               </ul>
             </div>
 
-            <motion.div
-              initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96 }}
-              animate={shouldReduceMotion ? undefined : { opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, ease: "easeOut", delay: 0.08 }}
-              className="panel relative overflow-hidden p-3 sm:p-4"
-            >
-              <div className="rounded-[1.5rem] border border-white/10 bg-[#0f1417] p-4 sm:p-5">
-              <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#f3b84d]" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-white/30" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="mono text-[9px] uppercase tracking-[0.22em] text-[#b9b2a8]">{heroPanel.portfolio}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-[#f3b84d]/35 bg-[#f3b84d]/8 p-3">
-                      <div className="mono text-[10px] uppercase tracking-[0.2em] text-[#f3b84d]">{heroPanel.focus}</div>
-                      <div className="mt-3 text-lg font-semibold text-[#f2efe8]">{locale === "es" ? "Productos reales" : "Products that ship"}</div>
-                      <div className="mt-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-[#f4d9a1]">
-                        <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
-                        {heroPanel.ready}
-                      </div>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-[#121a1d] p-3">
-                      <div className="mono text-[10px] uppercase tracking-[0.2em] text-[#c8c3bc]">{heroPanel.stack}</div>
-                      <div className="mt-3 flex flex-wrap items-center gap-2.5 text-[#c8c3bc] [&>svg]:h-5 [&>svg]:w-5 [&>img]:h-5 [&>img]:w-5">
-                        {techIcon("Next.js", "md")}
-                        {techIcon("React", "md")}
-                        {techIcon("JavaScript", "md")}
-                        {techIcon("TypeScript", "md")}
-                        {techIcon("Node.js", "md")}
-                        {techIcon("PostgreSQL", "md")}
-                        {techIcon("Prisma", "md")}
-                        {techIcon("Supabase", "md")}
-                        {techIcon("Tailwind CSS", "md")}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl border border-white/10 bg-[#12181b] p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="mono text-[10px] uppercase tracking-[0.2em] text-[#c8c3bc]">{heroPanel.delivery}</span>
-                      <span className="text-sm text-[#f3b84d]">92%</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-white/6">
-                      <div className="h-full w-[92%] rounded-full bg-[#f3b84d]" />
-                    </div>
-                    <div className="mt-5 grid grid-cols-3 gap-3 text-center text-xs">
-                      <div className="rounded-xl border border-white/10 bg-[#0f1417] p-2">
-                        <div className="mono text-[9px] uppercase tracking-[0.18em] text-[#a9a29b]">{heroPanel.eta}</div>
-                        <div className="mt-2 text-sm font-medium text-[#f5f1ea]">12m</div>
-                      </div>
-                      <div className="rounded-xl border border-white/10 bg-[#0f1417] p-2">
-                        <div className="mono text-[9px] uppercase tracking-[0.18em] text-[#a9a29b]">{heroPanel.routes}</div>
-                        <div className="mt-2 text-sm font-medium text-[#f5f1ea]">28</div>
-                      </div>
-                      <div className="rounded-xl border border-white/10 bg-[#0f1417] p-2">
-                        <div className="mono text-[9px] uppercase tracking-[0.18em] text-[#a9a29b]">{heroPanel.status}</div>
-                        <div className="mt-2 text-sm font-medium text-[#f5f1ea]">{heroPanel.live}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl border border-white/10 bg-[#10171a] p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="mono text-[10px] uppercase tracking-[0.2em] text-[#d9d3cc]">{heroPanel.workflow}</span>
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#f3b84d]">{heroPanel.build}</span>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[#0d1114] px-3 py-2 text-xs text-[#e8e0d5]">
-                        <span>{heroPanel.data}</span>
-                        <span className="text-[#f3b84d]">{heroPanel.model}</span>
-                      </div>
-                      <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[#0d1114] px-3 py-2 text-xs text-[#e8e0d5]">
-                        <span>{heroPanel.api}</span>
-                        <div className="flex items-center gap-1.5 [&>svg]:h-4 [&>svg]:w-4">
-                          {techIcon("Node.js", "md")}
-                          {techIcon("TypeScript", "md")}
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[#0d1114] px-3 py-2 text-xs text-[#e8e0d5]">
-                        <span>{heroPanel.ui}</span>
-                        <div className="flex items-center gap-1.5 [&>svg]:h-4 [&>svg]:w-4">
-                          {techIcon("Next.js", "md")}
-                          {techIcon("React", "md")}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
           </motion.section>
 
           <motion.section
@@ -850,9 +750,9 @@ export function PortfolioPage() {
             className="py-12"
           >
             <div className="panel overflow-hidden">
-              <div className="flex flex-col lg:flex-row lg:items-stretch">
+              <div className="flex flex-col gap-0 lg:grid lg:grid-cols-[300px_1fr] lg:items-stretch">
                 {/* Foto — columna izquierda compacta */}
-                <div className="relative w-full shrink-0 lg:w-[280px] xl:w-[320px]">
+                <div className="relative w-full shrink-0">
                   <div className="relative h-[260px] w-full lg:h-full lg:min-h-[340px]">
                     <Image
                       src="/IMG_0043-fondo-gris.png"
