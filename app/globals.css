@@ -86,6 +86,6 @@ a {
   }
 
   .eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full border border-[#f3b84d]/30 bg-[#f3b84d]/8 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-[#f3b84d];
+    @apply inline-flex items-center gap-2 rounded-full border border-[#f3b84d]/30 bg-[#f3b84d]/8 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-[#f3b84d] whitespace-nowrap sm:px-3.5 sm:text-[11px];
   }
 }

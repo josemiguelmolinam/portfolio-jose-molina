@@ -30,9 +30,9 @@ export const content = {
     ],
     hero: {
       eyebrow: "Disponible para proyectos",
-      title: "Desarrollo productos desde la lógica hasta la interfaz.",
+      title: "Desarrollador full-stack, todo lo que sé lo aprendí construyendo cosas reales.",
       description:
-        "Soy Jose Miguel Molina. Trabajo como desarrollador full-stack con una forma de hacer las cosas bastante práctica: entiendo el problema, construyo la base, y cuido que la experiencia final sea útil y fácil de usar.",
+        "Soy Jose Miguel Molina, desarrollador full-stack autodidacta, aprendí resolviendo problemas reales en vez de ejercicios de clase, y hoy eso se traduce en aplicaciones completas, pensadas para que quien las use no tenga que pensárselo dos veces.",
       ctaPrimary: "Contactar",
       ctaSecondary: "Ver GitHub",
       stats: [
@@ -44,9 +44,9 @@ export const content = {
     about: {
       heading: "Sobre mí",
       intro:
-        "Empecé en programación con un bootcamp que no me dio la base que necesitaba. Así que aprendí construyendo: resolviendo problemas reales, mejorando procesos y buscando soluciones que realmente funcionen.",
+        "Aprendo mejor construyendo que estudiando, siempre ha sido así, cada aplicación que he hecho nació de un problema real que necesitaba existir, no de un ejercicio de práctica.",
       body:
-        "Hoy trabajo entre producto y desarrollo. Me interesa entender la necesidad, definir una estructura clara y construirla bien, sin perder de vista que al final importa cómo funciona para la gente que lo usa.",
+        "Esto cambia la forma en que te enfrentas al código, no vale con que funcione “más o menos” tiene que funcionar de verdad para alguien que lo va a usar de verdad, con el tiempo, eso se convirtió en mi forma de trabajar: primero entiendo bien el problema, luego levanto una base sólida y, sobre todo, me aseguro de que la experiencia final sea clara y fácil de usar.",
       quickFacts: [
         { label: "Ubicación", value: "Mallorca, España" },
         { label: "Idiomas", value: "Español nativo · Inglés avanzado" },
@@ -54,7 +54,7 @@ export const content = {
       ],
     },
     stack: {
-      heading: "Stack",
+      heading: "Tecnologías",
       groups: [
         {
           title: "Frontend",
@@ -215,9 +215,9 @@ export const content = {
     ],
     hero: {
       eyebrow: "Available for projects",
-      title: "I build products from the logic layer to the interface.",
+      title: "Full-stack developer, everything I know I learned by building real things.",
       description:
-        "I’m Jose Miguel Molina. I work as a full-stack developer with a practical approach: I understand the problem, build the foundation, and make sure the final experience is useful and easy to use.",
+        "I’m Jose Miguel Molina, a self-taught full-stack developer. I learned by solving real problems instead of classroom exercises, and today that translates into complete applications designed so the people using them never have to think twice.",
       ctaPrimary: "Contact me",
       ctaSecondary: "View GitHub",
       stats: [
@@ -229,9 +229,9 @@ export const content = {
     about: {
       heading: "About me",
       intro:
-        "I started in programming with a bootcamp that didn’t give me the grounding I needed. So I learned by building: solving real problems, improving processes and creating things that actually work in practice.",
+        "I learn better by building than by studying. It has always been that way: every app I’ve made came from a real problem that needed to exist, not from a practice exercise.",
       body:
-        "Today I work between product and development. I care about understanding the need, shaping a clear structure and building it well, without losing sight of how it feels for the people using it.",
+        "This changes the way you approach code. It’s not enough for it to work “more or less”; it has to work properly for someone who is actually going to use it. Over time, that became my way of working: first I understand the problem well, then I build a solid foundation and, above all, I make sure the final experience is clear and easy to use.",
       quickFacts: [
         { label: "Location", value: "Mallorca, Spain" },
         { label: "Languages", value: "Spanish native · English advanced" },
@@ -239,7 +239,7 @@ export const content = {
       ],
     },
     stack: {
-      heading: "Stack",
+      heading: "Technologies",
       groups: [
         {
           title: "Frontend",

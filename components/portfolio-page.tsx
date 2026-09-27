@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { GrLinkedinOption } from "react-icons/gr";
 import { content, defaultLocale, storageKey, type Locale, type Project } from "@/lib/content";
 
 const fadeInUp = {
@@ -79,7 +80,7 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
             src="/aparcaya-mockup.jpg"
             alt="Aparcaya project preview"
             fill
-            className="object-cover object-center grayscale opacity-60 transition-all duration-700 ease-in-out group-hover:grayscale-0 group-hover:opacity-100"
+            className="object-cover object-center transition-all duration-700 ease-in-out group-hover:scale-[1.02]"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
           <div className="absolute inset-x-0 bottom-0 h-0"/>
@@ -192,6 +193,12 @@ function ProjectCard({ project, locale }: { project: Project; locale: Locale }) 
   const images = projectImages[project.id] || [];
   const hasLightbox = images.length > 0;
   const currentImgSrc = images[currentImgIndex];
+  const compactStatus =
+    project.id === "logistic-ai"
+      ? locale === "es"
+        ? "Backend · Frontend"
+        : "Backend · Frontend"
+      : project.status;
 
   const closeLightbox = useCallback(() => {
     setLightboxOpen(false);
@@ -225,31 +232,31 @@ function ProjectCard({ project, locale }: { project: Project; locale: Locale }) 
       variants={fadeInUp}
       transition={{ duration: 0.45, ease: "easeOut" }}
       whileHover={{ y: -4 }}
-      className="panel flex h-full flex-col overflow-hidden"
+      className="panel flex h-full flex-col overflow-hidden bg-[#0d1316]/90"
     >
-      <div className="border-b border-white/10 bg-[#10171a]/80 p-4 sm:p-5">
-        <div className="flex items-center justify-between gap-3">
-          <span className="mono text-[10px] uppercase tracking-[0.22em] text-[#f3b84d]">{project.name}</span>
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            {project.id === "aparcaya" && (
-              <span className="flex items-center gap-1.5 rounded-full border border-[#facc15]/30 bg-[#facc15]/10 px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] text-[#facc15] animate-pulse">
-                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/>
-                </svg>
-                {locale === "es" ? "En desarrollo" : "In development"}
-              </span>
-            )}
-            <span className="rounded-full border border-[#f3b84d]/30 bg-[#f3b84d]/8 px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] text-[#f7d69a]">
-              {project.status}
+      <div className="border-b border-white/10 bg-[#10171a]/90 p-4 sm:p-5">
+        <div className="flex w-full items-center justify-between gap-2">
+          <span className="mono min-w-0 truncate text-[10px] font-semibold uppercase tracking-[0.22em] text-[#f3b84d] sm:text-[11px]">{project.name}</span>
+
+          {project.id === "aparcaya" ? (
+            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#facc15]/35 bg-[#facc15]/10 px-3 py-1.5 text-[7px] font-medium uppercase tracking-[0.14em] text-[#facc15] animate-pulse whitespace-nowrap sm:text-[7.5px]">
+              <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                <path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/>
+              </svg>
+              {locale === "es" ? "En curso" : "In progress"}
             </span>
-          </div>
+          ) : (
+            <span className="inline-flex shrink-0 items-center rounded-full border border-[#f3b84d]/35 bg-[#f3b84d]/8 px-3 py-1.5 text-[7px] font-medium uppercase tracking-[0.14em] text-[#f7d69a] whitespace-nowrap sm:text-[7.5px]">
+              {compactStatus}
+            </span>
+          )}
         </div>
       </div>
       <div className="grid gap-5 p-4 sm:p-5 lg:grid-cols-[1.08fr_0.92fr] lg:items-stretch">
         <div className="space-y-5">
           <div className="space-y-3">
-            <h3 className="text-[clamp(1.6rem,2.2vw,2.15rem)] font-semibold tracking-[-0.05em] text-[#f5f1ea]">{project.name}</h3>
-            <p className="text-base leading-7 text-[#c8c2bb] sm:text-[1.05rem]">{project.blurb[locale]}</p>
+            <h3 className="text-[clamp(1.6rem,4vw,2.2rem)] font-semibold leading-[1.04] tracking-[-0.06em] text-[#f5f1ea]">{project.name}</h3>
+            <p className="text-base leading-7 text-[#c8c2bb] sm:text-[1.02rem]">{project.blurb[locale]}</p>
           </div>
           <div className="flex flex-wrap gap-2.5">
             {project.stack.map((item) => (
@@ -508,16 +515,22 @@ function techIcon(name: string, size: "sm" | "md" = "md"): React.ReactNode {
 
 export function PortfolioPage() {
   const shouldReduceMotion = useReducedMotion();
-  const [locale, setLocale] = useState<Locale>(() => {
-    if (typeof window === "undefined") {
-      return defaultLocale;
-    }
-
-    const savedLocale = window.localStorage.getItem(storageKey) as Locale | null;
-    return savedLocale === "es" || savedLocale === "en" ? savedLocale : defaultLocale;
-  });
+  const [locale, setLocale] = useState<Locale>(defaultLocale);
   const [copiedValue, setCopiedValue] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [contactRevealed, setContactRevealed] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const savedLocale = window.localStorage.getItem(storageKey) as Locale | null;
+    if (savedLocale === "es" || savedLocale === "en") {
+      setLocale(savedLocale);
+      return;
+    }
+
+    window.localStorage.setItem(storageKey, defaultLocale);
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -620,10 +633,6 @@ export function PortfolioPage() {
                   <div className="truncate text-[1.02rem] font-semibold leading-none text-[#f5f1ea]">Jose Miguel Molina</div>
                   <div className="mt-1 flex items-center gap-2 text-[8px] uppercase tracking-[0.18em] text-[#b7b0a6]">
                     <span className="truncate">Full-stack</span>
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-1.25 py-0.5 text-[6.5px] tracking-[0.18em] text-emerald-300">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
-                      <span className="whitespace-nowrap">{heroPanel.available}</span>
-                    </span>
                   </div>
                 </div>
               </a>
@@ -682,35 +691,45 @@ export function PortfolioPage() {
           >
             <div className="w-full text-left">
 
-              <h1 className="mt-6 max-w-[12ch] text-4xl font-semibold leading-[0.96] tracking-[-0.06em] text-[#f3efe7] sm:max-w-[14ch] sm:text-5xl lg:max-w-[15ch] lg:text-[4.5rem] lg:leading-[0.9]">
+              <h1 className="mt-6 max-w-[14ch] text-[1.9rem] font-semibold leading-[0.94] tracking-[-0.06em] text-[#f3efe7] sm:max-w-[15ch] sm:text-[2.7rem] lg:max-w-[17ch] lg:text-[3.3rem] lg:leading-[0.88]">
                 {t.hero.title}
               </h1>
               <p className="mt-6 max-w-xl text-sm leading-6 text-[#d0cac2] sm:text-lg">
                 {t.hero.description}
               </p>
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-8 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-3">
                 <a
                   href="#contact"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/3 px-5 py-3 text-sm font-medium text-[#f5f1ea] transition-colors hover:border-[#f3b84d]/40 hover:text-[#f3b84d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3b84d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d0f]"
+                  onClick={() => setContactRevealed(true)}
+                  className="inline-flex items-center justify-center gap-2 rounded-[999px] border border-white/10 bg-white/3 px-3 py-2.5 text-[11px] font-medium leading-none text-[#f5f1ea] transition-colors hover:border-[#f3b84d]/40 hover:text-[#f3b84d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3b84d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d0f] sm:px-5 sm:py-3 sm:text-sm"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                     <path d="m22 2-7 20-4-9-9-4Z"/>
                     <path d="M22 2 11 13"/>
                   </svg>
-                  {t.hero.ctaPrimary}
+                  <span className="inline-flex items-center leading-none">{t.hero.ctaPrimary}</span>
                 </a>
                 <a
                   href="https://github.com/josemiguelmolinam"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/3 px-5 py-3 text-sm font-medium text-[#f5f1ea] transition-colors hover:border-[#f3b84d]/40 hover:text-[#f3b84d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3b84d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d0f]"
+                  className="inline-flex items-center justify-center gap-2 rounded-[999px] border border-white/10 bg-white/3 px-3 py-2.5 text-[11px] font-medium leading-none text-[#f5f1ea] transition-colors hover:border-[#f3b84d]/40 hover:text-[#f3b84d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3b84d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d0f] sm:px-5 sm:py-3 sm:text-sm"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                     <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
                     <path d="M9 18c-4.51 2-5-2-7-2"/>
                   </svg>
-                  {t.hero.ctaSecondary}
+                  <span className="inline-flex items-center leading-none">{t.hero.ctaSecondary}</span>
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/josemolinam/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-[999px] border border-white/10 bg-white/3 px-3 py-2.5 text-[10.5px] font-medium leading-none text-[#f5f1ea] transition-colors hover:border-[#f3b84d]/40 hover:text-[#f3b84d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3b84d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d0f] sm:px-5 sm:py-3 sm:text-[13px]"
+                >
+                  <GrLinkedinOption className="mt-0 h-[15px] w-[15px] shrink-0 sm:h-[17px] sm:w-[17px]" />
+                  <span className="inline-flex items-center leading-none">LinkedIn</span>
                 </a>
               </div>
 
@@ -769,12 +788,12 @@ export function PortfolioPage() {
                 <div className="flex flex-1 flex-col justify-center gap-5 p-6 sm:p-8 lg:p-10">
                   <div>
                     <span className="eyebrow">{t.about.heading}</span>
-                    <h2 className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-[#f3efe7]">{t.about.heading}</h2>
+                    <h2 className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-[#f5f1ea]">{t.about.heading}</h2>
                   </div>
 
-                  <div className="space-y-3">
-                    <p className="text-[15px] leading-7 text-[#d4cfc7]">{t.about.intro}</p>
-                    <p className="text-[15px] leading-7 text-[#d4cfc7]">{t.about.body}</p>
+                  <div className="space-y-4 lg:max-w-[62ch]">
+                    <p className="text-[14px] leading-7 text-[#d4cfc7] sm:text-[15px]">{t.about.intro}</p>
+                    <p className="text-[14px] leading-7 text-[#d4cfc7] sm:text-[15px]">{t.about.body}</p>
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-3">
@@ -814,8 +833,7 @@ export function PortfolioPage() {
           >
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <span className="eyebrow">{t.stack.heading}</span>
-                <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[#f3efe7]">{t.stack.heading}</h2>
+                <span className="eyebrow">{t.stack.heading === "Tecnologías" ? "Tecnologías" : "Stack"}</span>
               </div>
             </div>
 
@@ -857,12 +875,11 @@ export function PortfolioPage() {
           >
             <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <span className="eyebrow">{portfolioLabel}</span>
-                <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[#f3efe7]">{projectsHeading}</h2>
+                <span className="eyebrow px-4 py-1.5 text-[11px] sm:text-[12px]">{projectsHeading}</span>
               </div>
             </div>
 
-            <div className="space-y-5">
+            <div className="space-y-6 sm:space-y-8">
               {t.projects.map((project) => (
                 <ProjectCard key={project.id} project={project} locale={locale} />
               ))}
@@ -878,91 +895,107 @@ export function PortfolioPage() {
             transition={{ duration: 0.45, ease: "easeOut" }}
             className="py-14"
           >
-            <div className="panel overflow-hidden">
-              {/* Cabecera con gradiente sutil */}
-              <div className="border-b border-white/8 bg-gradient-to-r from-[#f3b84d]/6 via-transparent to-transparent px-6 py-6 sm:px-8 sm:py-7">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <h2 className="inline-flex items-center gap-2 rounded-full border border-[#f3b84d]/30 bg-[#f3b84d]/8 px-4 py-1.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#f3b84d]">
-                      {t.contact.heading}
-                    </h2>
-                  </div>
-                </div>
-              </div>
+            <div className="mb-5 flex items-center justify-start">
+              <span className="eyebrow px-3 py-1 text-[10px] sm:px-4 sm:py-1.5 sm:text-[12px]">{t.contact.heading}</span>
+            </div>
 
-              {/* Grid de métodos de contacto */}
-              <div className="grid gap-px bg-white/6 sm:grid-cols-2" role="list">
-                {t.contact.methods.map((method, i) => {
-                  const icons: Record<string, React.ReactNode> = {
-                    Email: (
-                      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <rect x="3" y="5" width="18" height="14" rx="2" />
-                        <path d="m4 7 8 6 8-6" />
-                      </svg>
-                    ),
-                    Teléfono: (
-                      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.98.34 1.95.63 2.88a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.2-1.29a2 2 0 0 1 2.11-.45c.93.29 1.9.5 2.88.63A2 2 0 0 1 22 16.92Z" />
-                      </svg>
-                    ),
-                    Phone: (
-                      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.98.34 1.95.63 2.88a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.2-1.29a2 2 0 0 1 2.11-.45c.93.29 1.9.5 2.88.63A2 2 0 0 1 22 16.92Z" />
-                      </svg>
-                    ),
-                    LinkedIn: (
-                      <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden="true">
-                        <path d="M6.94 8.5A1.56 1.56 0 1 1 6.94 5.4a1.56 1.56 0 0 1 0 3.1ZM5.5 9.75h2.94v8.75H5.5V9.75Zm4.7 0h2.82v1.2h.04c.39-.74 1.35-1.52 2.78-1.52 2.98 0 3.53 1.96 3.53 4.5v4.57H17.4v-4.28c0-1.02-.02-2.33-1.42-2.33-1.42 0-1.64 1.11-1.64 2.25v4.36h-2.94V9.75Z" />
-                      </svg>
-                    ),
-                    GitHub: (
-                      <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden="true">
-                        <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.3 9.45 7.9 10.97.6.1.8-.25.8-.56v-2.1c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.8 1.4 3.5 1.1.1-.8.4-1.4.8-1.7-2.6-.3-5.4-1.3-5.4-5.8 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.5.1-3.1 0 0 1-.3 3.2 1.2 1-.3 2-.4 3-.4s2 .1 3 .4c2.2-1.5 3.2-1.2 3.2-1.2.7 1.6.2 2.8.1 3.1.8.8 1.3 2 1.3 3.2 0 4.5-2.8 5.5-5.5 5.8.4.4.8 1.2.8 2.4v3.6c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
-                      </svg>
-                    ),
-                  };
-                  return (
-                    <div
-                      key={method.label}
-                      role="listitem"
-                      className="group relative flex flex-col gap-3 bg-[#111820] px-4 py-4 transition-colors hover:bg-[#13202a] sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5 sm:py-5"
-                    >
-                      {/* Icono / índice */}
-                      <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#f3b84d]/20 bg-[#f3b84d]/8 text-[#f3b84d] transition-colors group-hover:border-[#f3b84d]/40 group-hover:bg-[#f3b84d]/14 sm:h-10 sm:w-10">
-                          <span className="flex items-center justify-center leading-none">
-                            {icons[method.label] ?? String(i + 1).padStart(2, "0")}
-                          </span>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="mono text-[9px] uppercase tracking-[0.22em] text-[#f3b84d]">{method.label}</div>
-                          <a
-                            href={method.href}
-                            target={method.href.startsWith("http") ? "_blank" : undefined}
-                            rel={method.href.startsWith("http") ? "noreferrer" : undefined}
-                            className="mt-0.5 block break-all text-sm font-medium text-[#f0ece4] transition-colors hover:text-[#f3b84d]"
-                          >
-                            {method.value}
-                          </a>
-                        </div>
-                      </div>
+            <div className="rounded-[1.15rem] border border-white/8 bg-[#0d1115]/80 p-2.5 shadow-[0_10px_20px_rgba(0,0,0,0.15)] ring-1 ring-white/4 sm:p-3">
+              <button
+                type="button"
+                onClick={() => setContactRevealed((prev) => !prev)}
+                className={`inline-flex w-fit items-center justify-center gap-2 rounded-full border px-2.5 py-2 text-[8.5px] font-medium uppercase tracking-[0.2em] backdrop-blur-sm transition-all duration-200 sm:px-3 sm:py-2.25 sm:text-[9px] ${
+                  contactRevealed
+                    ? "border-[#f3b84d]/55 bg-[#f3b84d]/12 text-[#f7d89a] shadow-[0_0_0_1px_rgba(243,184,77,0.15)]"
+                    : "border-[#f3b84d]/30 bg-[#f3b84d]/8 text-[#f3b84d] hover:border-[#f3b84d]/45 hover:bg-[#f3b84d]/12"
+                }`}
+              >
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-9Z" />
+                  <path d="m5 7 7 5 7-5" />
+                </svg>
+                {contactRevealed ? (locale === "es" ? "Ocultar" : "Hide") : (locale === "es" ? "Mostrar contacto" : "Show contact")}
+              </button>
 
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(method.value)}
-                        aria-label={`Copiar ${method.label}`}
-                        className={`shrink-0 self-start rounded-full border px-3.5 py-2 text-[9px] uppercase tracking-[0.2em] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3b84d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d0f] sm:self-auto ${
-                          copiedValue === method.value
-                            ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-300"
-                            : "border-white/10 bg-[#0d1316] text-[#d0cac2] hover:border-[#f3b84d]/35 hover:text-[#f3b84d]"
-                        }`}
+              <AnimatePresence initial={false}>
+                {contactRevealed && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                    transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                    className="mt-4 grid gap-2 sm:grid-cols-2"
+                    role="list"
+                  >
+                    {t.contact.methods.map((method, i) => {
+                      const icons: Record<string, React.ReactNode> = {
+                      Email: (
+                        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <rect x="3" y="5" width="18" height="14" rx="2" />
+                          <path d="m4 7 8 6 8-6" />
+                        </svg>
+                      ),
+                      Teléfono: (
+                        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.98.34 1.95.63 2.88a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.2-1.29a2 2 0 0 1 2.11-.45c.93.29 1.9.5 2.88.63A2 2 0 0 1 22 16.92Z" />
+                        </svg>
+                      ),
+                      Phone: (
+                        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.98.34 1.95.63 2.88a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.2-1.29a2 2 0 0 1 2.11-.45c.93.29 1.9.5 2.88.63A2 2 0 0 1 22 16.92Z" />
+                        </svg>
+                      ),
+                      LinkedIn: (
+                        <GrLinkedinOption className="h-5 w-5" />
+                      ),
+                      GitHub: (
+                        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden="true">
+                          <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.3 9.45 7.9 10.97.6.1.8-.25.8-.56v-2.1c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.8 1.4 3.5 1.1.1-.8.4-1.4.8-1.7-2.6-.3-5.4-1.3-5.4-5.8 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.5.1-3.1 0 0 1-.3 3.2 1.2 1-.3 2-.4 3-.4s2 .1 3 .4c2.2-1.5 3.2-1.2 3.2-1.2.7 1.6.2 2.8.1 3.1.8.8 1.3 2 1.3 3.2 0 4.5-2.8 5.5-5.5 5.8.4.4.8 1.2.8 2.4v3.6c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
+                        </svg>
+                      ),
+                    };
+                    return (
+                      <div
+                        key={method.label}
+                        role="listitem"
+                        className="group relative flex flex-col gap-3 rounded-2xl border border-white/8 bg-[#111820]/90 p-3 transition-all duration-200 hover:border-[#f3b84d]/20 hover:bg-[#121b22] sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-4"
                       >
-                        {copiedValue === method.value ? "✓ Copiado" : t.contact.cta}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
+                        <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#f3b84d]/18 bg-[#f3b84d]/8 text-[#f3b84d] transition-colors group-hover:border-[#f3b84d]/35 group-hover:bg-[#f3b84d]/12">
+                            <span className="flex items-center justify-center leading-none">
+                              {icons[method.label] ?? String(i + 1).padStart(2, "0")}
+                            </span>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="mono text-[8px] uppercase tracking-[0.22em] text-[#f3b84d] sm:text-[9px]">{method.label}</div>
+                            <a
+                              href={method.href}
+                              target={method.href.startsWith("http") ? "_blank" : undefined}
+                              rel={method.href.startsWith("http") ? "noreferrer" : undefined}
+                              className="mt-0.5 block break-all text-sm font-medium text-[#f0ece4] transition-colors hover:text-[#f3b84d]"
+                            >
+                              {method.value}
+                            </a>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(method.value)}
+                          aria-label={`Copiar ${method.label}`}
+                          className={`shrink-0 self-start rounded-full border px-3 py-2 text-[8px] uppercase tracking-[0.18em] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3b84d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d0f] sm:self-auto sm:px-3.5 sm:text-[9px] ${
+                            copiedValue === method.value
+                              ? "border-emerald-400/50 bg-emerald-400/10 text-emerald-300"
+                              : "border-white/10 bg-[#0d1316] text-[#d0cac2] hover:border-[#f3b84d]/35 hover:text-[#f3b84d]"
+                          }`}
+                        >
+                          {copiedValue === method.value ? "✓ Copiado" : t.contact.cta}
+                        </button>
+                      </div>
+                    );
+                  })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.section>
         </main>
@@ -976,15 +1009,21 @@ export function PortfolioPage() {
                 © {new Date().getFullYear()} Jose Miguel Molina
               </p>
 
-              <p className="mono flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-[#4f4c46]">
+              <p className="mono flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-[#4f4c46] sm:text-[9.5px]">
                 {locale === "es" ? "Diseñado y construido desde Mallorca" : "Designed & built from Mallorca"}
-                <span
+                <svg
                   aria-hidden="true"
-                  className="text-[18px] leading-none text-[#f3b84d]/70"
-                  style={{ display: "inline-block", animation: "heartbeat 1.4s ease-in-out infinite" }}
+                  viewBox="0 0 24 24"
+                  className="-translate-x-0.5 -translate-y-0.5 h-5 w-5 text-[#f3b84d]"
+                  fill="currentColor"
+                  stroke="currentColor"
+                  strokeWidth="0.25"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ animation: "heartbeat 1.5s ease-in-out infinite" }}
                 >
-                  ♥
-                </span>
+                  <path d="M12 20.5c-2.9-2.17-8.5-6.3-8.5-11.02A4.31 4.31 0 0 1 7.8 5.2c1.5 0 2.88.65 3.7 1.8.82-1.15 2.2-1.8 3.7-1.8a4.31 4.31 0 0 1 4.3 4.28c0 4.72-5.6 8.85-8.5 11.02Z" />
+                </svg>
               </p>
 
               <a
@@ -1005,7 +1044,6 @@ export function PortfolioPage() {
             </div>
           </div>
 
-          {/* Keyframes del corazón */}
           <style>{`
             @keyframes heartbeat {
               0%   { transform: scale(1); }
