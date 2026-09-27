@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPersonDigging } from "@fortawesome/free-solid-svg-icons";
 import { GrLinkedinOption } from "react-icons/gr";
 import { content, defaultLocale, storageKey, type Locale, type Project } from "@/lib/content";
 
@@ -240,10 +242,8 @@ function ProjectCard({ project, locale }: { project: Project; locale: Locale }) 
 
           {project.id === "aparcaya" ? (
             <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#facc15]/35 bg-[#facc15]/10 px-3 py-1.5 text-[7px] font-medium uppercase tracking-[0.14em] text-[#facc15] animate-pulse whitespace-nowrap sm:text-[7.5px]">
-              <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                <path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/>
-              </svg>
-              {locale === "es" ? "En curso" : "In progress"}
+              <FontAwesomeIcon icon={faPersonDigging} style={{ color: "#f3b84d", width: "11px", height: "11px" }} />
+              {locale === "es" ? "En proceso" : "In progress"}
             </span>
           ) : (
             <span className="inline-flex shrink-0 items-center rounded-full border border-[#f3b84d]/35 bg-[#f3b84d]/8 px-3 py-1.5 text-[7px] font-medium uppercase tracking-[0.14em] text-[#f7d69a] whitespace-nowrap sm:text-[7.5px]">
