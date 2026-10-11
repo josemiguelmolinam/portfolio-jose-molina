@@ -77,12 +77,12 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
       );
     case "aparcaya":
       return (
-        <div className="group relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[240px]">
+        <div className="group relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[240px] lg:w-full" style={{ aspectRatio: "20 / 9" }}>
           <Image
             src="/aparcaya-mockup.jpg"
             alt="Aparcaya project preview"
             fill
-            className="object-cover object-center transition-all duration-700 ease-in-out group-hover:scale-[1.02]"
+            className="h-full w-full object-cover object-center transition-all duration-700 ease-in-out group-hover:scale-[1.02]"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
           <div className="absolute inset-x-0 bottom-0 h-0"/>
@@ -90,7 +90,7 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
       );
     case "micoche":
       return (
-        <div className="relative flex h-full min-h-[200px] w-full items-center justify-center overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[240px]">
+        <div className="relative flex h-full min-h-[200px] w-full items-center justify-center overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[400px]">
           <div ref={scrollRef} className="flex w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden px-14 py-4 [&::-webkit-scrollbar]:hidden">
             <div className="flex items-center gap-4 sm:gap-6">
               {[
@@ -106,14 +106,14 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
                 <div 
                   key={idx}
                   onClick={(e) => { e.stopPropagation(); onImageClick?.(idx); }}
-                  className="relative aspect-[9/19.5] h-[170px] shrink-0 snap-center overflow-hidden rounded-[1rem] border-[3px] border-[#1f262a] bg-black shadow-2xl transition-transform hover:scale-[1.02] sm:h-[190px] lg:h-[210px] cursor-zoom-in"
+                  className="relative aspect-[9/19.5] h-[170px] shrink-0 snap-center overflow-hidden rounded-[1rem] border-[3px] border-[#1f262a] bg-black shadow-2xl transition-transform hover:scale-[1.02] sm:h-[190px] lg:h-[360px] xl:h-[430px] cursor-zoom-in"
                 >
                   <Image
                     src={src}
                     alt={`Micoche mobile screenshot ${idx + 1}`}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 768px) 90px, 110px"
+                    sizes="(max-width: 768px) 90px, 220px"
                   />
                 </div>
               ))}
@@ -126,14 +126,14 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
           {/* Navigation Buttons */}
           <button
             onClick={(e) => scroll('left', e)}
-            className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 sm:left-4 sm:h-10 sm:w-10"
+            className="absolute bottom-3 left-1/2 z-10 flex h-9 w-9 -translate-x-[115%] items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 sm:h-10 sm:w-10"
             aria-label="Anterior captura"
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           </button>
           <button
             onClick={(e) => scroll('right', e)}
-            className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 sm:right-4 sm:h-10 sm:w-10"
+            className="absolute bottom-3 right-1/2 z-10 flex h-9 w-9 translate-x-[115%] items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 sm:h-10 sm:w-10"
             aria-label="Siguiente captura"
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
@@ -155,12 +155,12 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
       );
     case "mercado-nipon":
       return (
-        <div className="relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[240px]">
+        <div className="relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[240px] lg:w-full" style={{ aspectRatio: "20 / 9" }}>
           <Image
             src="/mercado-nipon.png"
             alt="Mercado Nipón product preview"
             fill
-            className="object-cover object-top"
+            className="h-full w-full object-cover object-top"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
           <div className="absolute inset-x-0 bottom-0 h-0"/>
@@ -518,7 +518,7 @@ export function PortfolioPage() {
   const [locale, setLocale] = useState<Locale>(defaultLocale);
   const [copiedValue, setCopiedValue] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [contactRevealed, setContactRevealed] = useState(false);
+
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -701,7 +701,6 @@ export function PortfolioPage() {
               <div className="mt-8 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-3">
                 <a
                   href="#contact"
-                  onClick={() => setContactRevealed(true)}
                   className="inline-flex items-center justify-center gap-2 rounded-[999px] border border-white/10 bg-white/3 px-3 py-2.5 text-[11px] font-medium leading-none text-[#f5f1ea] transition-colors hover:border-[#f3b84d]/40 hover:text-[#f3b84d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3b84d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d0f] sm:px-5 sm:py-3 sm:text-sm"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
@@ -900,32 +899,10 @@ export function PortfolioPage() {
             </div>
 
             <div className="rounded-[1.15rem] border border-white/8 bg-[#0d1115]/80 p-2.5 shadow-[0_10px_20px_rgba(0,0,0,0.15)] ring-1 ring-white/4 sm:p-3">
-              <button
-                type="button"
-                onClick={() => setContactRevealed((prev) => !prev)}
-                className={`inline-flex w-fit items-center justify-center gap-2 rounded-full border px-2.5 py-2 text-[8.5px] font-medium uppercase tracking-[0.2em] backdrop-blur-sm transition-all duration-200 sm:px-3 sm:py-2.25 sm:text-[9px] ${
-                  contactRevealed
-                    ? "border-[#f3b84d]/55 bg-[#f3b84d]/12 text-[#f7d89a] shadow-[0_0_0_1px_rgba(243,184,77,0.15)]"
-                    : "border-[#f3b84d]/30 bg-[#f3b84d]/8 text-[#f3b84d] hover:border-[#f3b84d]/45 hover:bg-[#f3b84d]/12"
-                }`}
+              <div
+                className="grid gap-2 sm:grid-cols-2"
+                role="list"
               >
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-9Z" />
-                  <path d="m5 7 7 5 7-5" />
-                </svg>
-                {contactRevealed ? (locale === "es" ? "Ocultar" : "Hide") : (locale === "es" ? "Mostrar contacto" : "Show contact")}
-              </button>
-
-              <AnimatePresence initial={false}>
-                {contactRevealed && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                    transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-                    className="mt-4 grid gap-2 sm:grid-cols-2"
-                    role="list"
-                  >
                     {t.contact.methods.map((method, i) => {
                       const icons: Record<string, React.ReactNode> = {
                       Email: (
@@ -993,9 +970,7 @@ export function PortfolioPage() {
                       </div>
                     );
                   })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              </div>
             </div>
           </motion.section>
         </main>
