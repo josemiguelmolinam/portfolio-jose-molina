@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPersonDigging } from "@fortawesome/free-solid-svg-icons";
 import { GrLinkedinOption } from "react-icons/gr";
@@ -13,10 +13,31 @@ const fadeInUp = {
   visible: { opacity: 1, y: 0 },
 };
 
-const slideVariants = {
-  enter: (dir: number) => ({ opacity: 0, x: dir * 60 }),
-  center: { opacity: 1, x: 0 },
-  exit: (dir: number) => ({ opacity: 0, x: dir * -60 }),
+const carouselVariants: Variants = {
+  enter: {
+    opacity: 0,
+    filter: "blur(6px)",
+    scale: 0.995,
+  },
+  center: {
+    opacity: 1,
+    filter: "blur(0px)",
+    scale: 1,
+    transition: {
+      duration: 0.65,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+  exit: {
+    opacity: 0,
+    filter: "blur(6px)",
+    scale: 0.995,
+    pointerEvents: "none",
+    transition: {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
 };
 
 function LanguageToggle({
@@ -429,27 +450,16 @@ function ProjectCard({
             </div>
             
             {images.length > 1 && (
-              <>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev > 0 ? prev - 1 : images.length - 1)); }}
-                  className="absolute left-2 sm:-left-16 top-1/2 -translate-y-1/2 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-black/90"
-                  aria-label="Imagen anterior"
-                >
-                  <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-8 sm:w-8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m15 18-6-6 6-6"/></svg>
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev < images.length - 1 ? prev + 1 : 0)); }}
-                  className="absolute right-2 sm:-right-16 top-1/2 -translate-y-1/2 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-black/90"
-                  aria-label="Siguiente imagen"
-                >
-                  <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-8 sm:w-8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6"/></svg>
-                </button>
-                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex gap-1.5">
-                  {images.map((_, i) => (
-                    <div key={i} className={`h-1.5 rounded-full transition-all ${i === currentImgIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/40'}`} />
-                  ))}
-                </div>
-              </>
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                {images.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(i); }}
+                    aria-label={`Ver captura ${i + 1}`}
+                    className={`h-2 rounded-full transition-all ${i === currentImgIndex ? 'w-6 bg-[#f3b84d]' : 'w-2 bg-white/40 hover:bg-white/70'}`}
+                  />
+                ))}
+              </div>
             )}
 
           </motion.div>
@@ -1016,24 +1026,25 @@ export function PortfolioPage() {
               onMouseLeave={() => { setCarouselPaused(false); setProgressKey((k) => k + 1); }}
               onTouchStart={() => setCarouselPaused(true)}
             >
-              <AnimatePresence mode="wait" initial={false} custom={slideDirection}>
-                <motion.div
-                  key={currentProject}
-                  custom={slideDirection}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <ProjectCard
-                    key={t.projects[currentProject].id}
-                    project={t.projects[currentProject]}
-                    locale={locale}
-                    onLightboxChange={(open) => setCarouselPaused(open)}
-                  />
-                </motion.div>
-              </AnimatePresence>
+              <div className="grid grid-cols-1 grid-rows-1">
+                <AnimatePresence initial={false}>
+                  <motion.div
+                    key={currentProject}
+                    variants={carouselVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    className="col-start-1 row-start-1 w-full"
+                  >
+                    <ProjectCard
+                      key={t.projects[currentProject].id}
+                      project={t.projects[currentProject]}
+                      locale={locale}
+                      onLightboxChange={(open) => setCarouselPaused(open)}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </div>
 
           </motion.section>
