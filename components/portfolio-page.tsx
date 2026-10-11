@@ -13,6 +13,12 @@ const fadeInUp = {
   visible: { opacity: 1, y: 0 },
 };
 
+const slideVariants = {
+  enter: (dir: number) => ({ opacity: 0, x: dir * 60 }),
+  center: { opacity: 1, x: 0 },
+  exit: (dir: number) => ({ opacity: 0, x: dir * -60 }),
+};
+
 function LanguageToggle({
   locale,
   onChange,
@@ -52,14 +58,72 @@ function LanguageToggle({
 
 function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImageClick?: (index: number) => void }) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isDraggingOrScrolling = useRef(false);
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
+  const isMouseDown = useRef(false);
+  const mouseStartX = useRef(0);
+  const scrollStartX = useRef(0);
+  const didMouseMove = useRef(false);
 
-  const scroll = (direction: 'left' | 'right', e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (scrollRef.current) {
-      const scrollAmount = scrollRef.current.clientWidth * 0.75; 
-      scrollRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartPos.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+    isDraggingOrScrolling.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartPos.current) return;
+    const dx = Math.abs(e.touches[0].clientX - touchStartPos.current.x);
+    const dy = Math.abs(e.touches[0].clientY - touchStartPos.current.y);
+    if (dx > 7 || dy > 7) {
+      isDraggingOrScrolling.current = true;
     }
   };
+
+  const handleTouchEnd = () => {
+    touchStartPos.current = null;
+    setTimeout(() => {
+      isDraggingOrScrolling.current = false;
+    }, 80);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isMouseDown.current = true;
+    mouseStartX.current = e.pageX;
+    if (scrollRef.current) {
+      scrollStartX.current = scrollRef.current.scrollLeft;
+    }
+    didMouseMove.current = false;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isMouseDown.current || !scrollRef.current) return;
+    const dx = e.pageX - mouseStartX.current;
+    if (Math.abs(dx) > 5) {
+      didMouseMove.current = true;
+      isDraggingOrScrolling.current = true;
+      scrollRef.current.scrollLeft = scrollStartX.current - dx;
+    }
+  };
+
+  const handleMouseUp = () => {
+    isMouseDown.current = false;
+    setTimeout(() => {
+      didMouseMove.current = false;
+      isDraggingOrScrolling.current = false;
+    }, 80);
+  };
+
+  const handleImageClick = (idx: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isDraggingOrScrolling.current || didMouseMove.current) {
+      return;
+    }
+    onImageClick?.(idx);
+  };
+
   switch (projectId) {
     case "logistic-ai":
       return (
@@ -91,8 +155,20 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
     case "micoche":
       return (
         <div className="relative flex h-full min-h-[200px] w-full items-center justify-center overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[400px]">
-          <div ref={scrollRef} className="flex w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden px-14 py-4 [&::-webkit-scrollbar]:hidden">
-            <div className="flex items-center gap-4 sm:gap-6">
+          <div
+            ref={scrollRef}
+            onScroll={() => { isDraggingOrScrolling.current = true; }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            className="flex w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden px-4 py-4 sm:px-6 overscroll-x-contain touch-pan-x cursor-grab active:cursor-grabbing select-none scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
+            <div className="flex items-center gap-3.5 sm:gap-5">
               {[
                 "/micoche-2.jpg",
                 "/micoche-3.jpg",
@@ -105,39 +181,24 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
               ].map((src, idx) => (
                 <div 
                   key={idx}
-                  onClick={(e) => { e.stopPropagation(); onImageClick?.(idx); }}
-                  className="relative aspect-[9/19.5] h-[170px] shrink-0 snap-center overflow-hidden rounded-[1rem] border-[3px] border-[#1f262a] bg-black shadow-2xl transition-transform hover:scale-[1.02] sm:h-[190px] lg:h-[360px] xl:h-[430px] cursor-zoom-in"
+                  onClick={(e) => handleImageClick(idx, e)}
+                  className="relative aspect-[9/19.5] h-[175px] shrink-0 snap-center overflow-hidden rounded-[1rem] border-[2.5px] border-[#1f262a] bg-black shadow-2xl transition-transform hover:scale-[1.03] active:scale-[0.98] sm:h-[195px] lg:h-[360px] xl:h-[430px] cursor-pointer"
                 >
                   <Image
                     src={src}
                     alt={`Micoche mobile screenshot ${idx + 1}`}
                     fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 90px, 220px"
+                    className="pointer-events-none select-none object-cover"
+                    draggable={false}
+                    sizes="(max-width: 768px) 100px, 220px"
                   />
                 </div>
               ))}
             </div>
           </div>
           {/* Subtle gradient fades for the edges to indicate scrollability */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#0d1316] to-transparent sm:w-24" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#0d1316] to-transparent sm:w-24" />
-          
-          {/* Navigation Buttons */}
-          <button
-            onClick={(e) => scroll('left', e)}
-            className="absolute bottom-3 left-1/2 z-10 flex h-9 w-9 -translate-x-[115%] items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 sm:h-10 sm:w-10"
-            aria-label="Anterior captura"
-          >
-            <svg viewBox="0 0 24 24" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          <button
-            onClick={(e) => scroll('right', e)}
-            className="absolute bottom-3 right-1/2 z-10 flex h-9 w-9 translate-x-[115%] items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 sm:h-10 sm:w-10"
-            aria-label="Siguiente captura"
-          >
-            <svg viewBox="0 0 24 24" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-[#0d1316] to-transparent sm:w-10" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-[#0d1316] to-transparent sm:w-10" />
         </div>
       );
     case "qrapido":
@@ -188,10 +249,19 @@ const projectImages: Record<string, string[]> = {
   ],
 };
 
-function ProjectCard({ project, locale }: { project: Project; locale: Locale }) {
+function ProjectCard({ 
+  project, 
+  locale,
+  onLightboxChange,
+}: { 
+  project: Project; 
+  locale: Locale;
+  onLightboxChange?: (open: boolean) => void;
+}) {
   const features = project.features[locale];
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
+  const lightboxTouchStartX = useRef<number | null>(null);
   const images = projectImages[project.id] || [];
   const hasLightbox = images.length > 0;
   const currentImgSrc = images[currentImgIndex];
@@ -205,6 +275,10 @@ function ProjectCard({ project, locale }: { project: Project; locale: Locale }) 
   const closeLightbox = useCallback(() => {
     setLightboxOpen(false);
   }, []);
+
+  useEffect(() => {
+    onLightboxChange?.(lightboxOpen);
+  }, [lightboxOpen, onLightboxChange]);
 
   useEffect(() => {
     if (!lightboxOpen) return;
@@ -328,8 +402,19 @@ function ProjectCard({ project, locale }: { project: Project; locale: Locale }) 
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.88, opacity: 0, y: 10 }}
             transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="relative flex max-h-[90vh] max-w-[92vw] flex-col items-center justify-center"
+            className="relative flex max-h-[90vh] max-w-[92vw] flex-col items-center justify-center select-none"
             onClick={e => e.stopPropagation()}
+            onTouchStart={(e) => { lightboxTouchStartX.current = e.touches[0].clientX; }}
+            onTouchEnd={(e) => {
+              if (lightboxTouchStartX.current === null) return;
+              const diff = e.changedTouches[0].clientX - lightboxTouchStartX.current;
+              if (diff > 45 && images.length > 1) {
+                setCurrentImgIndex(prev => (prev > 0 ? prev - 1 : images.length - 1));
+              } else if (diff < -45 && images.length > 1) {
+                setCurrentImgIndex(prev => (prev < images.length - 1 ? prev + 1 : 0));
+              }
+              lightboxTouchStartX.current = null;
+            }}
           >
             <div className="relative overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
               <Image
@@ -337,7 +422,8 @@ function ProjectCard({ project, locale }: { project: Project; locale: Locale }) 
                 alt={`${project.name} preview`}
                 width={1400}
                 height={900}
-                className="block max-h-[90vh] w-auto object-contain"
+                className="block max-h-[90vh] w-auto object-contain pointer-events-none select-none"
+                draggable={false}
                 priority
               />
             </div>
@@ -346,13 +432,15 @@ function ProjectCard({ project, locale }: { project: Project; locale: Locale }) 
               <>
                 <button
                   onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev > 0 ? prev - 1 : images.length - 1)); }}
-                  className="absolute -left-12 sm:-left-16 top-1/2 -translate-y-1/2 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-black/90"
+                  className="absolute left-2 sm:-left-16 top-1/2 -translate-y-1/2 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-black/90"
+                  aria-label="Imagen anterior"
                 >
                   <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-8 sm:w-8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m15 18-6-6 6-6"/></svg>
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev < images.length - 1 ? prev + 1 : 0)); }}
-                  className="absolute -right-12 sm:-right-16 top-1/2 -translate-y-1/2 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-black/90"
+                  className="absolute right-2 sm:-right-16 top-1/2 -translate-y-1/2 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-black/90"
+                  aria-label="Siguiente imagen"
                 >
                   <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-8 sm:w-8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6"/></svg>
                 </button>
@@ -513,11 +601,19 @@ function techIcon(name: string, size: "sm" | "md" = "md"): React.ReactNode {
   }
 }
 
+const AUTOPLAY_MS = 15000;
+
 export function PortfolioPage() {
   const shouldReduceMotion = useReducedMotion();
   const [locale, setLocale] = useState<Locale>(defaultLocale);
   const [copiedValue, setCopiedValue] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentProject, setCurrentProject] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<1 | -1>(1);
+  const [carouselPaused, setCarouselPaused] = useState(false);
+  const [progressKey, setProgressKey] = useState(0);
+  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const projectsLengthRef = useRef(0);
 
 
   useEffect(() => {
@@ -540,6 +636,30 @@ export function PortfolioPage() {
   const t = content[locale];
   const projectsHeading = locale === "es" ? "Proyectos" : "Projects";
   const portfolioLabel = locale === "es" ? "Portafolio" : "Portfolio";
+
+  // Siempre actualizado para el closure del interval
+  projectsLengthRef.current = t.projects.length;
+
+  // Autoplay carousel — useRef garantiza un único interval sin fugas
+  useEffect(() => {
+    if (autoplayRef.current) {
+      clearInterval(autoplayRef.current);
+      autoplayRef.current = null;
+    }
+    if (carouselPaused) return;
+    autoplayRef.current = setInterval(() => {
+      setSlideDirection(1);
+      setCurrentProject((p) => (p + 1) % projectsLengthRef.current);
+      setProgressKey((k) => k + 1);
+    }, AUTOPLAY_MS);
+    return () => {
+      if (autoplayRef.current) {
+        clearInterval(autoplayRef.current);
+        autoplayRef.current = null;
+      }
+    };
+  }, [carouselPaused]);
+
   const stackCategoryIcon = (title: string) => {
     // Frontend → monitor / pantalla
     if (title === "Frontend") return (
@@ -872,17 +992,50 @@ export function PortfolioPage() {
             transition={{ duration: 0.45, ease: "easeOut" }}
             className="py-14"
           >
-            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <span className="eyebrow px-4 py-1.5 text-[11px] sm:text-[12px]">{projectsHeading}</span>
-              </div>
+            {/* Header: título */}
+            <div className="mb-5 flex items-center justify-start">
+              <span className="eyebrow px-4 py-1.5 text-[11px] sm:text-[12px]">{projectsHeading}</span>
             </div>
 
-            <div className="space-y-6 sm:space-y-8">
-              {t.projects.map((project) => (
-                <ProjectCard key={project.id} project={project} locale={locale} />
-              ))}
+            {/* Barra de progreso */}
+            <div className="mb-5 h-px w-full overflow-hidden rounded-full bg-white/8">
+              <motion.div
+                key={progressKey}
+                className="h-full rounded-full bg-[#f3b84d]/60"
+                initial={{ width: "0%" }}
+                animate={{ width: carouselPaused ? undefined : "100%" }}
+                transition={{ duration: AUTOPLAY_MS / 1000, ease: "linear" }}
+              />
             </div>
+
+
+            {/* Carousel slide con pausa al hover y touch */}
+            <div
+              className="relative min-h-[420px] overflow-hidden sm:min-h-[480px] lg:min-h-[520px]"
+              onMouseEnter={() => setCarouselPaused(true)}
+              onMouseLeave={() => { setCarouselPaused(false); setProgressKey((k) => k + 1); }}
+              onTouchStart={() => setCarouselPaused(true)}
+            >
+              <AnimatePresence mode="wait" initial={false} custom={slideDirection}>
+                <motion.div
+                  key={currentProject}
+                  custom={slideDirection}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <ProjectCard
+                    key={t.projects[currentProject].id}
+                    project={t.projects[currentProject]}
+                    locale={locale}
+                    onLightboxChange={(open) => setCarouselPaused(open)}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
           </motion.section>
 
           <motion.section
