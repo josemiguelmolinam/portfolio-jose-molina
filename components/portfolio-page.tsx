@@ -77,7 +77,39 @@ function LanguageToggle({
   );
 }
 
-function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImageClick?: (index: number) => void }) {
+const MICOCHE_IMAGES = [
+  "/micoche-2.jpg",
+  "/micoche-3.jpg",
+  "/micoche-4.jpg",
+  "/micoche-5.jpg",
+  "/micoche-8.png",
+  "/micoche-6.jpg",
+  "/micoche-7.jpg",
+  "/micoche-1.jpg",
+] as const;
+
+const micocheSlideVariants: Variants = {
+  enter: (dir: number) => ({
+    opacity: 0,
+    x: dir > 0 ? 60 : -60,
+    filter: "blur(6px)",
+  }),
+  center: {
+    opacity: 1,
+    x: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+  },
+  exit: (dir: number) => ({
+    opacity: 0,
+    x: dir > 0 ? -60 : 60,
+    filter: "blur(6px)",
+    pointerEvents: "none",
+    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
+function MicocheVisual({ onImageClick }: { onImageClick?: (index: number) => void }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isDraggingOrScrolling = useRef(false);
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
@@ -87,38 +119,25 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
   const didMouseMove = useRef(false);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartPos.current = {
-      x: e.touches[0].clientX,
-      y: e.touches[0].clientY,
-    };
+    touchStartPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     isDraggingOrScrolling.current = false;
   };
-
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!touchStartPos.current) return;
     const dx = Math.abs(e.touches[0].clientX - touchStartPos.current.x);
     const dy = Math.abs(e.touches[0].clientY - touchStartPos.current.y);
-    if (dx > 7 || dy > 7) {
-      isDraggingOrScrolling.current = true;
-    }
+    if (dx > 7 || dy > 7) isDraggingOrScrolling.current = true;
   };
-
   const handleTouchEnd = () => {
     touchStartPos.current = null;
-    setTimeout(() => {
-      isDraggingOrScrolling.current = false;
-    }, 80);
+    setTimeout(() => { isDraggingOrScrolling.current = false; }, 80);
   };
-
   const handleMouseDown = (e: React.MouseEvent) => {
     isMouseDown.current = true;
     mouseStartX.current = e.pageX;
-    if (scrollRef.current) {
-      scrollStartX.current = scrollRef.current.scrollLeft;
-    }
+    if (scrollRef.current) scrollStartX.current = scrollRef.current.scrollLeft;
     didMouseMove.current = false;
   };
-
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isMouseDown.current || !scrollRef.current) return;
     const dx = e.pageX - mouseStartX.current;
@@ -128,27 +147,61 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
       scrollRef.current.scrollLeft = scrollStartX.current - dx;
     }
   };
-
   const handleMouseUp = () => {
     isMouseDown.current = false;
-    setTimeout(() => {
-      didMouseMove.current = false;
-      isDraggingOrScrolling.current = false;
-    }, 80);
+    setTimeout(() => { didMouseMove.current = false; isDraggingOrScrolling.current = false; }, 80);
   };
-
-  const handleImageClick = (idx: number, e: React.MouseEvent) => {
+  const handleClick = (idx: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isDraggingOrScrolling.current || didMouseMove.current) {
-      return;
-    }
+    if (isDraggingOrScrolling.current || didMouseMove.current) return;
     onImageClick?.(idx);
   };
 
+  return (
+    <div className="relative flex h-full min-h-[200px] w-full items-center overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[400px] xl:min-h-[440px]">
+      <div
+        ref={scrollRef}
+        onScroll={() => { isDraggingOrScrolling.current = true; }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        className="flex w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden px-4 py-5 sm:px-6 overscroll-x-contain touch-pan-x cursor-grab active:cursor-grabbing select-none scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden items-center"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
+        <div className="flex items-center gap-3 sm:gap-4 lg:gap-5">
+          {MICOCHE_IMAGES.map((src, idx) => (
+            <div
+              key={idx}
+              onClick={(e) => handleClick(idx, e)}
+              className="relative aspect-[9/19.5] h-[165px] shrink-0 snap-center overflow-hidden rounded-[1rem] border-[2px] border-[#1f262a] bg-black shadow-2xl transition-all duration-300 hover:scale-[1.04] hover:border-[#f3b84d]/25 active:scale-[0.97] sm:h-[195px] lg:h-[330px] xl:h-[380px] cursor-pointer"
+            >
+              <Image
+                src={src}
+                alt={`Micoche screenshot ${idx + 1}`}
+                fill
+                className="pointer-events-none select-none object-cover"
+                draggable={false}
+                sizes="(max-width: 768px) 90px, (max-width: 1024px) 115px, 180px"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-[#0d1316] to-transparent sm:w-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-[#0d1316] to-transparent sm:w-10" />
+    </div>
+  );
+}
+
+function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImageClick?: (index: number) => void }) {
   switch (projectId) {
     case "logistic-ai":
       return (
-        <div className="relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[240px]">
+        <div className="relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[400px] xl:min-h-[440px]">
           <Image
             src="/logistic-ai.png"
             alt="Logistic-AI project preview"
@@ -162,7 +215,7 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
       );
     case "aparcaya":
       return (
-        <div className="group relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[240px] lg:w-full" style={{ aspectRatio: "20 / 9" }}>
+        <div className="group relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[400px] xl:min-h-[440px]">
           <Image
             src="/aparcaya-mockup.jpg"
             alt="Aparcaya project preview"
@@ -174,57 +227,10 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
         </div>
       );
     case "micoche":
-      return (
-        <div className="relative flex h-full min-h-[200px] w-full items-center justify-center overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[400px]">
-          <div
-            ref={scrollRef}
-            onScroll={() => { isDraggingOrScrolling.current = true; }}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            className="flex w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden px-4 py-4 sm:px-6 overscroll-x-contain touch-pan-x cursor-grab active:cursor-grabbing select-none scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            style={{ WebkitOverflowScrolling: "touch" }}
-          >
-            <div className="flex items-center gap-3.5 sm:gap-5">
-              {[
-                "/micoche-2.jpg",
-                "/micoche-3.jpg",
-                "/micoche-4.jpg",
-                "/micoche-5.jpg",
-                "/micoche-8.png",
-                "/micoche-6.jpg",
-                "/micoche-7.jpg",
-                "/micoche-1.jpg",
-              ].map((src, idx) => (
-                <div 
-                  key={idx}
-                  onClick={(e) => handleImageClick(idx, e)}
-                  className="relative aspect-[9/19.5] h-[175px] shrink-0 snap-center overflow-hidden rounded-[1rem] border-[2.5px] border-[#1f262a] bg-black shadow-2xl transition-transform hover:scale-[1.03] active:scale-[0.98] sm:h-[195px] lg:h-[360px] xl:h-[430px] cursor-pointer"
-                >
-                  <Image
-                    src={src}
-                    alt={`Micoche mobile screenshot ${idx + 1}`}
-                    fill
-                    className="pointer-events-none select-none object-cover"
-                    draggable={false}
-                    sizes="(max-width: 768px) 100px, 220px"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Subtle gradient fades for the edges to indicate scrollability */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-[#0d1316] to-transparent sm:w-10" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-[#0d1316] to-transparent sm:w-10" />
-        </div>
-      );
+      return <MicocheVisual onImageClick={onImageClick} />;
     case "qrapido":
       return (
-        <div className="relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[240px]">
+        <div className="relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[400px] xl:min-h-[440px]">
           <Image
             src="/Qrapido.png"
             alt="QRapido product preview"
@@ -237,7 +243,7 @@ function ProjectVisual({ projectId, onImageClick }: { projectId: string; onImage
       );
     case "mercado-nipon":
       return (
-        <div className="relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[240px] lg:w-full" style={{ aspectRatio: "20 / 9" }}>
+        <div className="relative h-full min-h-[200px] w-full overflow-hidden bg-[#0d1316] sm:min-h-[220px] lg:min-h-[400px] xl:min-h-[440px]">
           <Image
             src="/mercado-nipon.png"
             alt="Mercado Nipón product preview"
@@ -611,8 +617,6 @@ function techIcon(name: string, size: "sm" | "md" = "md"): React.ReactNode {
   }
 }
 
-const AUTOPLAY_MS = 15000;
-
 export function PortfolioPage() {
   const shouldReduceMotion = useReducedMotion();
   const [locale, setLocale] = useState<Locale>(defaultLocale);
@@ -620,10 +624,6 @@ export function PortfolioPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentProject, setCurrentProject] = useState(0);
   const [slideDirection, setSlideDirection] = useState<1 | -1>(1);
-  const [carouselPaused, setCarouselPaused] = useState(false);
-  const [progressKey, setProgressKey] = useState(0);
-  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const projectsLengthRef = useRef(0);
 
 
   useEffect(() => {
@@ -645,30 +645,6 @@ export function PortfolioPage() {
 
   const t = content[locale];
   const projectsHeading = locale === "es" ? "Proyectos" : "Projects";
-  const portfolioLabel = locale === "es" ? "Portafolio" : "Portfolio";
-
-  // Siempre actualizado para el closure del interval
-  projectsLengthRef.current = t.projects.length;
-
-  // Autoplay carousel — useRef garantiza un único interval sin fugas
-  useEffect(() => {
-    if (autoplayRef.current) {
-      clearInterval(autoplayRef.current);
-      autoplayRef.current = null;
-    }
-    if (carouselPaused) return;
-    autoplayRef.current = setInterval(() => {
-      setSlideDirection(1);
-      setCurrentProject((p) => (p + 1) % projectsLengthRef.current);
-      setProgressKey((k) => k + 1);
-    }, AUTOPLAY_MS);
-    return () => {
-      if (autoplayRef.current) {
-        clearInterval(autoplayRef.current);
-        autoplayRef.current = null;
-      }
-    };
-  }, [carouselPaused]);
 
   const stackCategoryIcon = (title: string) => {
     // Frontend → monitor / pantalla
@@ -740,6 +716,11 @@ export function PortfolioPage() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleLightboxChange = useCallback((_open: boolean) => {
+    // autoplay removed — nothing to pause
+  }, []);
+
   return (
     <>
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(243,184,77,0.12),_transparent_26%),radial-gradient(circle_at_bottom_right,_rgba(243,184,77,0.08),_transparent_30%)]" />
@@ -777,7 +758,7 @@ export function PortfolioPage() {
                   aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
                   aria-expanded={mobileMenuOpen}
                   onClick={() => setMobileMenuOpen((prev) => !prev)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/8 bg-[#151d21] text-[#f5f1ea] transition-colors hover:border-[#f3b84d]/30 hover:text-[#f3b84d] md:hidden"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#f3b84d]/20 bg-[#151d21] text-[#f3b84d] transition-colors hover:border-[#f3b84d]/40 hover:bg-[#f3b84d]/8 md:hidden"
                 >
                   <span className="relative block h-4 w-4">
                     <span className={`absolute left-0 top-0 block h-0.5 w-4 rounded-full bg-current transition-all ${mobileMenuOpen ? "translate-y-[7px] rotate-45" : "translate-y-0 rotate-0"}`} />
@@ -1002,50 +983,60 @@ export function PortfolioPage() {
             transition={{ duration: 0.45, ease: "easeOut" }}
             className="py-14"
           >
-            {/* Header: título */}
-            <div className="mb-5 flex items-center justify-start">
-              <span className="eyebrow px-4 py-1.5 text-[11px] sm:text-[12px]">{projectsHeading}</span>
-            </div>
-
-            {/* Barra de progreso */}
-            <div className="mb-5 h-px w-full overflow-hidden rounded-full bg-white/8">
-              <motion.div
-                key={progressKey}
-                className="h-full rounded-full bg-[#f3b84d]/60"
-                initial={{ width: "0%" }}
-                animate={{ width: carouselPaused ? undefined : "100%" }}
-                transition={{ duration: AUTOPLAY_MS / 1000, ease: "linear" }}
-              />
-            </div>
-
-
-            {/* Carousel slide con pausa al hover y touch */}
-            <div
-              className="relative min-h-[420px] overflow-hidden sm:min-h-[480px] lg:min-h-[520px]"
-              onMouseEnter={() => setCarouselPaused(true)}
-              onMouseLeave={() => { setCarouselPaused(false); setProgressKey((k) => k + 1); }}
-              onTouchStart={() => setCarouselPaused(true)}
-            >
-              <div className="grid grid-cols-1 grid-rows-1">
-                <AnimatePresence initial={false}>
-                  <motion.div
-                    key={currentProject}
-                    variants={carouselVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    className="col-start-1 row-start-1 w-full"
-                  >
-                    <ProjectCard
-                      key={t.projects[currentProject].id}
-                      project={t.projects[currentProject]}
-                      locale={locale}
-                      onLightboxChange={(open) => setCarouselPaused(open)}
-                    />
-                  </motion.div>
-                </AnimatePresence>
+            {/* Header + tabs de navegación */}
+            <div className="mb-6 flex flex-col gap-4">
+              <div className="flex items-center justify-start">
+                <span className="eyebrow px-3 py-1 text-[10px] sm:px-4 sm:py-1.5 sm:text-[12px]">{projectsHeading}</span>
+              </div>
+              {/* Tab strip — gradient fade derecho en móvil indica scroll */}
+              <div className="relative">
+                <div className="flex items-end gap-0 overflow-x-auto border-b border-white/8 scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  {t.projects.map((project, idx) => (
+                    <button
+                      key={project.id}
+                      type="button"
+                      onClick={() => {
+                        setSlideDirection(idx > currentProject ? 1 : -1);
+                        setCurrentProject(idx);
+                      }}
+                      className={`relative shrink-0 px-4 pb-3 pt-1.5 text-[11px] font-medium tracking-wide transition-colors duration-200 focus-visible:outline-none sm:text-[12px] ${
+                        idx === currentProject
+                          ? "text-[#f3b84d]"
+                          : "text-[#4e4940] hover:text-[#8a8378]"
+                      }`}
+                    >
+                      {project.name}
+                      {idx === currentProject && (
+                        <span className="absolute bottom-0 left-2 right-2 h-[2px] rounded-t-full bg-[#f3b84d]" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+                {/* Fade hint para indicar scroll en móvil */}
+                <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#0b0d0f] to-transparent sm:hidden" />
               </div>
             </div>
+
+            {/* Proyecto — sin overflow-hidden para que no se corte */}
+            <div className="relative">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={currentProject}
+                  variants={carouselVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                >
+                  <ProjectCard
+                    key={t.projects[currentProject].id}
+                    project={t.projects[currentProject]}
+                    locale={locale}
+                    onLightboxChange={handleLightboxChange}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
 
           </motion.section>
 
